@@ -1,0 +1,123 @@
+/*
+* spa.shell.css
+* shell styles
+*/
+@height32: '32px';
+
+[class^='spa-shell-'],
+[class*='spa-shell-']
+{
+    position: absolute;
+}
+
+.spa-shell-head
+{
+    top: 0;
+    right: 0;
+    left: 0;
+
+    height: 40px;
+    &-logo
+    {
+        top: 4px;
+        left: 4px;
+
+        width: 128px;
+        height: 32px;
+
+        background-color: orange;
+    }
+    &-acct
+    {
+        top: 4px;
+        right: 0;
+
+        width: 64px;
+        height: 32px;
+
+        background-color: green;
+    }
+    &-search
+    {
+        top: 4px;
+        right: 64px;
+
+        width: 248px;
+        height: 32px;
+
+        background-color: blue;
+    }
+}
+.spa-shell-main
+{
+    top: 40px;
+    right: 0;
+    bottom: 40px;
+    left: 0;
+    &-nav,
+    &-content
+    {
+        top: 0;
+        bottom: 0;
+    }
+    &-nav
+    {
+        width: 250px;
+
+        background-color: #eee;
+    }
+    &-content
+    {
+        right: 0;
+        left: 250px;
+
+        background-color: #ddd;
+    }
+    .spa-x-closed &-nav
+    {
+        width: 0;
+    }
+
+    .spa-x-closed &-content
+    {
+        left: 0;
+    }
+}
+.spa-shell-foot
+{
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    height: 40px;
+}
+.spa-shell-chat
+{
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+
+    width: 300px;
+    height: 15px;
+
+    border-radius: 5px 0 0 0;
+    background-color: red;
+    &:hover
+    {
+        background-color: #a00;
+    }
+}
+.spa-shell-modal
+{
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+
+    width: 400px;
+    height: 400px;
+    margin-top: -200px;
+    margin-left: -200px;
+
+    border-radius: 3px;
+    background-color: #fff;
+}

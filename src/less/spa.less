@@ -1,0 +1,78 @@
+*
+{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p
+{
+    margin-bottom: 10px;
+}
+ol,
+ul,
+dl
+{
+    list-style-position: inside;
+}
+
+body
+{
+    font: 13px 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
+
+    color: #444;
+    background-color: #888;
+}
+a
+{
+    text-decoration: none;
+    &:link,
+    &:visited
+    {
+        color: inherit;
+    }
+    &:hover
+    {
+        text-decoration: underline;
+    }
+}
+
+strong
+{
+    font-weight: 800;
+
+    color: #000;
+}
+
+
+#spa
+{
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+
+    overflow: hidden;
+
+    min-width: 500px;
+    min-height: 500px;
+
+    border-radius: 0 8px 0 8px;
+    background-color: #fff;
+}
+
+
+.spa-x-clearfloat
+{
+    visibility: hidden !important;
+    float: none !important;
+    clear: both !important;
+
+    height: 0 !important;
+}

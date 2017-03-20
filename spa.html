@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>SPA starter</title>
+  <link rel="stylesheet" href="dist/css/spa.min.css">
+
+  <script src="dist/lib/jQuery.js"></script>
+  <script src="dist/lib/jquery.uriAnchor.js"></script>
+  <!-- 文档JS文档 -->
+  <script src="dist/js/spa.js"></script>
+
+</head>
+<body>
+  <div id="spa"></div>
+  <script>
+    $(function(){
+      spa.initModule($('#spa'));
+    })
+  </script>
+</body>
+</html>
