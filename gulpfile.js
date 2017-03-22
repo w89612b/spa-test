@@ -35,7 +35,7 @@ gulp.task('build', function() {
     .pipe(cssmin()) // 压缩 ；兼容IE7及以下需设置compatibility属性 .pipe(cssmin({compatibility: 'ie7'}))
     .pipe(gulp.dest('dist/css'));
   // 编译合并压缩JS
-  gulp.src(['src/js/*.js', 'src/less/**/*.js'])
+  gulp.src(['src/js/*.js', 'src/js/**/*.js'])
     .pipe(plumber({ errorHandler: notify.onError('Error: <%= error.message %>') }))
     .pipe(sourcemaps.init())
     .pipe(concat('spa.js')) // 合并输出

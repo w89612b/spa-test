@@ -224,6 +224,10 @@ spa.shell = (function() {
       schema_map: configMap.auchor_schema_map
     });
     $(window).bind('hashchange', onHashchange).trigger('hashchange');
+
+    // 配置和初始化特性模块
+    spa.chat.configModule({});
+    spa.chat.initModule(jqueryMap.$chat);
   }
   return { initModule: initModule };
-}())
+}());
