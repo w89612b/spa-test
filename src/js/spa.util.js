@@ -43,8 +43,8 @@ spa.util = (function() {
       config_map = arg_map.config_map,
       key_name, error;
     for (key_name in input_map) {
-      if (input_map.hasOwnproperty(key_name)) {
-        if (settable_map.hasOwnproperty(key_name)) {
+      if (input_map.hasOwnProperty(key_name)) {
+        if (settable_map.hasOwnProperty(key_name)) {
           config_map[key_name] = input_map[key_name];
         } else {
           error = makeError('Bad Input', 'Setting config key |' + key_name + '| is not supported');

@@ -2,3 +2,145 @@
 *   spa.chat.less
 *   chat feature styles
 */
+.spa-chat
+{
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+
+    width: 25em;
+    height: 2em;
+
+    border: thin 0 0 thin solid #888;
+    border-radius: .5em 0 0 0;
+    background-color: #fff;
+    box-shadow: 0 0 0 .75em 0 #888;
+    &-head,
+    &-closer
+    {
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 800;
+        line-height: 1.8em;
+
+        position: absolute;
+        top: 0;
+
+        height: 2em;
+
+        cursor: pointer;
+        text-align: center;
+
+        color: white;
+        border-bottom: thin solid #888;
+        background-color: #888;
+    }
+    &-head
+    {
+        right: 2em;
+        left: 0;
+
+        border-radius: .3em 0 0 0;
+        &-toggle
+        {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+
+            width: 2em;
+
+            border-radius: .3em 0 0 0;
+        }
+        &-title
+        {
+            position: absolute;
+            left: 50%;
+
+            width: 16em;
+            margin-left: -8em;
+        }
+        &:hover &-toggle
+        {
+            background-color: #aaa;
+        }
+    }
+    &-closer
+    {
+        right: 0;
+
+        width: 2em;
+        &:hover
+        {
+            background-color: #800;
+        }
+    }
+    &-sizer
+    {
+        position: absolute;
+        top: 2em;
+        right: 0;
+        left: 0;
+    }
+    &-msgs
+    {
+        top: 1em;
+        right: 1em;
+        bottom: 4em;
+        left: 1em;
+
+        overflow-x: hidden;
+        overflow-y: scroll;
+
+        padding: .5em;
+
+        border: thin solid #888;
+    }
+    &-box
+    {
+        right: 1em;
+        bottom: 1em;
+        left: 1em;
+
+        height: 2em;
+
+        border: thin solid #888;
+        background-color: #888;
+        & input[type='text']
+        {
+            float: left;
+
+            width: 75%;
+            height: 100%;
+            padding: .5em;
+
+            color: #404040;
+            border: 0;
+            background-color: #ddd;
+            &:focus
+            {
+                background-color: #fff;
+            }
+        }
+        & div
+        {
+            font-weight: 800;
+            line-height: 1.9em;
+
+            float: left;
+
+            width: 25%;
+            height: 2em;
+
+            cursor: pointer;
+            text-align: center;
+
+            color: #fff;
+            &:hover
+            {
+                color: #ff0;
+                background-color: #444;
+            }
+        }
+    }
+}

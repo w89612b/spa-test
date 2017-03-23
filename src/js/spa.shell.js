@@ -14,7 +14,7 @@ spa.shell = (function() {
     configMap = {
       // 定义给uriAnchor使用的映射，用于验证
       auchor_schema_map: {
-        chat: { open: true, closed: true }
+        chat: { opened: true, closed: true }
       },
       main_html: '<div class="spa-shell-head">\
       <div class="spa-shell-head-logo"></div>\
@@ -26,24 +26,19 @@ spa.shell = (function() {
       <div class="spa-shell-main-content"></div>\
     </div>\
     <div class="spa-shell-foot"></div>\
-    <div class="spa-shell-chat"></div>\
     <div class="spa-shell-modal"></div>',
-      chat_extend_time: 1000,
-      chat_extend_height: 450,
-      chat_extend_title: 'Chick to retract',
-      chat_retract_time: 300,
-      chat_retract_height: 15,
-      chat_retract_title: 'Click to extend'
+      resize_interval: 200
     },
     // 将在模块中共享的动态信息放在stateMap变量中
     stateMap = {
       $container: null,
       anchor_map: {},
-      is_chat_retracted: true
+      is_chat_retracted: true,
+      resize_idto: undefined
     },
     // 将jQuery集合缓存在jQueryMap中
     jqueryMap = {},
-    setJQueryMap, toggleChat, onClickChat, initModule, copyAnchorMap, changeAnchorPart, onHashchange;
+    setJQueryMap, setChatAnchor, initModule, copyAnchorMap, changeAnchorPart, onHashchange, onResize;
 
   /*保留区块 此区块函数不和页面元素交互*/
   /****************************************BEGIN UTILITY METHODS**********************************************************/
@@ -54,50 +49,10 @@ spa.shell = (function() {
   /*将创建和操作页面元素的函数放在DOMMethods区块中*/
   /****************************************BEGIN DOM METHODS**********************************************************/
   setJQueryMap = function() {
-      var $container = stateMap.$container;
-      jqueryMap = {
-        $container: $container,
-        $chat: $container.find('.spa-shell-chat') // 将聊天滑块的jQuery集合缓存到jQueryMap中
-      };
-    }
-    // begin DOM methods /toggleChat/
-    // 目的：打开或关闭聊天滑块
-    // 状态： 设置 stateMap.is_chat_retracted
-    //  * true - 聊天滑块关闭
-    //  * false - 聊天滑块打开
-  toggleChat = function(do_extend, callback) {
-    var px_chat_ht = jqueryMap.$chat.height(),
-      is_open = px_chat_ht === configMap.chat_extend_height,
-      is_closed = px_chat_ht === configMap.chat_retract_height,
-      is_sliding = !is_open && !is_closed;
-    // 避免出现竞争条件，即滑块可能同时在展开和收缩
-    if (is_sliding) { return false; }
-    // 聊天滑块打开
-    if (do_extend) {
-      jqueryMap.$chat.animate({ height: configMap.chat_extend_height },
-        configMap.chat_extend_time,
-        function() {
-          jqueryMap.$chat.attr('title', configMap.chat_extend_title);
-          stateMap.is_chat_retracted = false;
-          if (callback) {
-            callback(configMap.$chat);
-          }
-        }
-      );
-      return true;
-    }
-    //聊天滑块关闭
-    jqueryMap.$chat.animate({ height: configMap.chat_retract_height },
-      configMap.chat_retract_time,
-      function() {
-        jqueryMap.$chat.attr('title', configMap.chat_retract_title);
-        stateMap.is_chat_retracted = true;
-        if (callback) {
-          callback(configMap.$chat);
-        }
-      }
-    );
-    return true;
+    var $container = stateMap.$container;
+    jqueryMap = {
+      $container: $container
+    };
   }
 
   // begin DOM methods /changeAnchorPart/
@@ -150,17 +105,6 @@ spa.shell = (function() {
 
   /*事件处理区块*/
   /****************************************BEGIN EVENT HANDLERS**********************************************************/
-  onClickChat = function(event) {
-    /*if (toggleChat(stateMap.is_chat_retracted)) {
-      $.uriAnchor.setAnchor({
-        chat: (stateMap.is_chat_retracted ? 'open' : 'closed')
-      })
-    }*/
-
-    changeAnchorPart({ chat: (stateMap.is_chat_retracted ? 'open' : 'closed') })
-    return false;
-  }
-
   // begin Event handler /onHashchange/
   // 目的: 处理hashchange事件
   // 参数：
@@ -173,7 +117,7 @@ spa.shell = (function() {
     var anchor_map_previous = copyAnchorMap(),
       anchor_map_proposed,
       _s_chat_previous, _s_chat_proposed,
-      s_chat_proposed;
+      s_chat_proposed, is_ok = true;
 
     // 尝试解析锚点
     try {
@@ -192,21 +136,49 @@ spa.shell = (function() {
     if (!anchor_map_previous || _s_chat_previous !== _s_chat_proposed) {
       s_chat_proposed = anchor_map_proposed.chat;
       switch (s_chat_proposed) {
-        case 'open':
-          toggleChat(true);
+        case 'opened':
+          is_ok = spa.chat.setSliderPosition('opened');
           break;
         case 'closed':
-          toggleChat(false);
+          is_ok = spa.chat.setSliderPosition('closed');
           break;
         default:
-          toggleChat(false);
+          spa.chat.setSliderPosition('closed');
           delete anchor_map_proposed.chat;
           $.uriAnchor.setAnchor(anchor_map_proposed, null, true);
           break;
       }
     }
-
+    if (!is_ok) {
+      if (anchor_map_previous) {
+        $.uriAnchor.setAnchor(anchor_map_previous, null, true);
+        stateMap.anchor_map = anchor_map_previous
+      } else {
+        delete anchor_map_proposed.chat;
+        $.uriAnchor.setAnchor(anchor_map_proposed, null, true);
+      }
+    }
     return false;
+  }
+
+  // begin Event handler /onReszie/
+  onResize = function() {
+    // 只要当前没有尺寸调整计时器在运作，就运行onResize的逻辑
+    if (stateMap.$container.resize_idto) { return false; }
+
+    spa.chat.handleResize();
+    stateMap.resize_idto = setTimeout(function() {
+      stateMap.resize_idto = undefined;
+    }, configMap.resize_interval);
+
+    //返回true给window.resize事件处理程序，这样jQuery就不会调用preventDefault或者stopPropagation
+    return true;
+  }
+
+  /****************************************BEGIN CALLBACKS**********************************************************/
+  // begin callback method /setChatAnchor/
+  setChatAnchor = function(position_type) {
+    return changeAnchorPart({ chat: position_type });
   }
 
   /*开放函数区块*/
@@ -215,19 +187,21 @@ spa.shell = (function() {
     stateMap.$container = $container;
     $container.html(configMap.main_html);
     setJQueryMap();
-    // 初始化聊天滑块关闭，并且添加聊天滑块点击事件
-    stateMap.is_chat_retracted = true;
-    jqueryMap.$chat.attr('title', configMap.chat_retract_title).click(onClickChat);
 
     // 配置uriAnchor插件，用于检测模式（schema）
     $.uriAnchor.configModule({
       schema_map: configMap.auchor_schema_map
     });
-    $(window).bind('hashchange', onHashchange).trigger('hashchange');
 
     // 配置和初始化特性模块
-    spa.chat.configModule({});
-    spa.chat.initModule(jqueryMap.$chat);
+    spa.chat.configModule({
+      set_chat_anchor: setChatAnchor,
+      chat_model: spa.model.chat,
+      people_model: spa.model.people
+    });
+    spa.chat.initModule(jqueryMap.$container);
+
+    $(window).bind('resize', onResize).bind('hashchange', onHashchange).trigger('hashchange');
   }
   return { initModule: initModule };
 }());
