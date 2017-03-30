@@ -20,24 +20,44 @@
     &-logo
     {
         top: 4px;
-        left: 4px;
+        left: 8px;
 
-        width: 128px;
+        width: 140px;
         height: 32px;
 
-        background-color: orange;
+        & h1
+        {
+            font: 800 22px/22px arial,helvetica,sans-serif;
+
+            margin: 0;
+        }
+        & p
+        {
+            font: 800 10px/10px arial,helvetica,sans-serif;
+
+            margin: 0;
+        }
     }
     &-acct
     {
+        line-height: 32px;
+
         top: 4px;
         right: 0;
 
-        width: 64px;
+        overflow: hidden;
+
+        width: 210px;
         height: 32px;
 
-        background-color: green;
+        cursor: pointer;
+        text-align: center;
+        text-overflow: ellipsis;
+
+        color: #fff;
+        background-color: #888;
     }
-    &-search
+    /* &-search
     {
         top: 4px;
         right: 64px;
@@ -46,7 +66,7 @@
         height: 32px;
 
         background-color: blue;
-    }
+    } */
 }
 .spa-shell-main
 {
@@ -62,14 +82,16 @@
     }
     &-nav
     {
-        width: 250px;
+        z-index: 1;
+
+        width: 400px;
 
         background-color: #eee;
     }
     &-content
     {
         right: 0;
-        left: 250px;
+        left: 400px;
 
         background-color: #ddd;
     }

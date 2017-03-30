@@ -7,6 +7,7 @@
 /*global $, spa */
 
 spa.shell = (function() {
+  'use strict';
   /*声明所有在名字空间内可用的变量*/
   /****************************************BEGIN MODULE SCOPE VARIABLES**********************************************************/
   var
@@ -17,7 +18,10 @@ spa.shell = (function() {
         chat: { opened: true, closed: true }
       },
       main_html: '<div class="spa-shell-head">\
-      <div class="spa-shell-head-logo"></div>\
+      <div class="spa-shell-head-logo">\
+        <h1>SAP</h1>\
+        <p>javascript end to end</p>\
+      </div>\
       <div class="spa-shell-head-acct"></div>\
       <div class="spa-shell-head-search"></div>\
     </div>\
@@ -38,7 +42,7 @@ spa.shell = (function() {
     },
     // 将jQuery集合缓存在jQueryMap中
     jqueryMap = {},
-    setJQueryMap, setChatAnchor, initModule, copyAnchorMap, changeAnchorPart, onHashchange, onResize;
+    setJQueryMap, setChatAnchor, initModule, copyAnchorMap, changeAnchorPart, onHashchange, onResize, onTapAcct, onLogin, onLogout;
 
   /*保留区块 此区块函数不和页面元素交互*/
   /****************************************BEGIN UTILITY METHODS**********************************************************/
@@ -51,7 +55,9 @@ spa.shell = (function() {
   setJQueryMap = function() {
     var $container = stateMap.$container;
     jqueryMap = {
-      $container: $container
+      $container: $container,
+      $acct: $container.find('.spa-shell-head-acct'),
+      $nav: $container.find('.spa-shell-main-nav')
     };
   }
 
@@ -175,6 +181,32 @@ spa.shell = (function() {
     return true;
   }
 
+  // begin Event /onTapAcct/
+  // 添加onTapAcct方法。当点击了账户元素时，如果用户是匿名的，则提示输入用户名，然后调用sap.model.people.login(<user_name>)方法，如果用户已经登入，则调用spa.model.people.logout()方法。
+  onTapAcct = function(event) {
+    var acct_text, user_name, user = spa.model.people.get_user();
+
+    if (user.get_is_anon()) {
+      user_name = prompt('Please sign-in');
+      spa.model.people.login(user_name);
+      jqueryMap.$acct.text('.....processing....');
+    } else {
+      spa.model.people.logout();
+    }
+
+    return false;
+  }
+
+  // begin Event /onLogin/
+  onLogin = function(event, login_user) {
+    jqueryMap.$acct.text(login_user.name);
+  }
+
+  // begin Event /onLogout/
+  onLogout = function(event) {
+    jqueryMap.$acct.text('Please Sign-in');
+  }
+
   /****************************************BEGIN CALLBACKS**********************************************************/
   // begin callback method /setChatAnchor/
   setChatAnchor = function(position_type) {
@@ -200,6 +232,12 @@ spa.shell = (function() {
       people_model: spa.model.people
     });
     spa.chat.initModule(jqueryMap.$container);
+
+    // 让jQuery集合$container分别订阅spa-login和spa-logout事件对应的onLogin和onLogout事件处理程序。
+    $.gevent.subscribe($container, 'spa-login', onLogin);
+    $.gevent.subscribe($container, 'spa-logout', onLogout);
+
+    jqueryMap.$acct.text('Please sign-in').bind('utap', onTapAcct);
 
     $(window).bind('resize', onResize).bind('hashchange', onHashchange).trigger('hashchange');
   }

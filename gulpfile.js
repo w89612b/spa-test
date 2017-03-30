@@ -35,7 +35,7 @@ gulp.task('build', function() {
     .pipe(cssmin()) // 压缩 ；兼容IE7及以下需设置compatibility属性 .pipe(cssmin({compatibility: 'ie7'}))
     .pipe(gulp.dest('dist/css'));
   // 编译合并压缩JS
-  gulp.src(['src/js/*.js', 'src/js/**/*.js'])
+  gulp.src(['src/js/spa.js', 'src/js/spa.{util,data,fake,model,util_b,shell}.js', 'src/js/**/*.js'])
     .pipe(plumber({ errorHandler: notify.onError('Error: <%= error.message %>') }))
     .pipe(sourcemaps.init())
     .pipe(concat('spa.js')) // 合并输出
@@ -45,7 +45,13 @@ gulp.task('build', function() {
     .pipe(uglify()) // 压缩js
     .pipe(gulp.dest('dist/js'));
   // 复制文件
-  gulp.src(['node_modules/jquery/{jquery,jquery.min}.js', 'node_modules/jquery.urianchor/jquery.uriAnchor.js'])
+  gulp.src([
+      'node_modules/jquery/{jquery,jquery.min}.js',
+      'node_modules/jquery.urianchor/jquery.uriAnchor.js',
+      'node_modules/jquery.event.gevent/jquery.event.gevent.js',
+      'node_modules/jquery.event.ue/jquery.event.ue.js',
+      'node_modules/taffydb/{taffy,taffy-min}.js'
+    ])
     .pipe(flatten())
     .pipe(gulp.dest('dist/lib'))
     .pipe(verify());
